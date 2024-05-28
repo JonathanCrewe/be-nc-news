@@ -1,5 +1,6 @@
 const express = require('express')
-const {getTopics } = require('./controllers/topics.controller.js')
+const {getTopics} = require('./controllers/topics.controller.js')
+const {getEndpoints} = require('./controllers/endpoints.controller.js')
 
 
 // Set up. 
@@ -8,6 +9,8 @@ app.use(express.json())
 
 // End points. 
 app.get('/api/topics', getTopics)
+
+app.get('/api/', getEndpoints)
 
 
 // Error handlers. 
