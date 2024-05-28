@@ -16,7 +16,7 @@ afterAll( () => {
 
 
 describe("GET/api/articles/:article_id", () => {
-    test("400 - responds with a 400 Bad Request if id is an invalid type", async () => {
+    test("400 - responds with a 404 Bad Request if id is an invalid type", async () => {
         const {body}  = await request(app).get("/api/articles/BadID").expect(400)
         expect(body.msg).toBe("Bad Request")
     })
