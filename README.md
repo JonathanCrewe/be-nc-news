@@ -1,6 +1,6 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+A developer wishing to work on this repository will need to add a .env.test an a .env.development file. Withing the the PGDATABASE should be set to the appropriate database. The databases themselves are set up in the db/setup.sql file.
 
 
 
