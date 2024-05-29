@@ -1,4 +1,4 @@
-const {selectCommentsByArticleId, createComment} = require('../models/comments.model')
+const {selectCommentsByArticleId, createComment, deleteCommentById} = require('../models/comments.model')
 
 
 async function getCommentsByArticleId(req, res, next) {
@@ -18,8 +18,8 @@ async function postComment(req, res, next) {
         const articleId = parseInt(req.params.article_id)
 
         const newCommentObj = req.body
-        const author = req.body.username
-        const commentBody = req.body.body
+        const author = newCommentObj.username
+        const commentBody = newCommentObj.body
 
         const newComment = await createComment(articleId, author, commentBody)
         res.status(200).send({comment: newComment})
@@ -27,8 +27,20 @@ async function postComment(req, res, next) {
     catch(err) {
         next(err)
     }
+}
 
+async function deleteComment(req, res, next) {
+    try{
+        const commentId = parseInt(req.params.comment_id)
+
+        await deleteCommentById(commentId)
+
+        res.status(204).send()
+    }
+    catch(err) {
+        next(err)
+    }
 }
 
 
-module.exports = {getCommentsByArticleId, postComment}
+module.exports = {getCommentsByArticleId, postComment, deleteComment}
