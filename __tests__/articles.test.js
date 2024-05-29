@@ -123,3 +123,85 @@ describe("GET/api/articles", () => {
         })
     })
 })
+
+
+describe("PATCH/api/articles/:article_id", () => {
+    test("400 - responds with a 400 Bad Request if id is an invalid type", async () => {
+        const requestBody = {inc_votes: 10}
+
+        const {body}  = await request(app).patch("/api/articles/BadId").send(requestBody).expect(400)
+
+        expect(body.msg).toBe("Bad Request")
+    })
+
+    test("400 - responds with a 400 Bad Request if increment amount is an invalid type", async () => {
+        const requestBody = {inc_votes: 'A string'}
+
+        const {body}  = await request(app).patch("/api/articles/1").send(requestBody).expect(400)
+        
+        expect(body.msg).toBe("Bad Request")
+    })
+
+    test("200 - responds with an updated article given valid input", async () => {
+        const requestBody = {inc_votes: 100}
+
+        const {body}  = await request(app).patch("/api/articles/1").send(requestBody).expect(200)
+        
+        expect(body.article).toEqual(
+            {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 200,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            }
+        )
+    })
+
+    test("200 - responds with an updated article given valid input with -ve increment", async () => {
+        const requestBody = {inc_votes: -50}
+
+        const {body}  = await request(app).patch("/api/articles/1").send(requestBody).expect(200)
+        
+        expect(body.article).toEqual(
+            {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 50,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            }
+        )
+    })
+
+    
+    test(`200 - responds with an updated article given valid input with -ve increment which makes votes -ve. 
+                could alternatively just reduce to 0 or return a Bad Request. 
+                Assumption here is: -ve votes are a -ve reputataion / dislike of the article`, async () => {
+        const requestBody = {inc_votes: -150}
+
+        const {body}  = await request(app).patch("/api/articles/1").send(requestBody).expect(200)
+        
+        expect(body.article).toEqual(
+            {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: -50,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            }
+        )
+    })
+})
