@@ -1,5 +1,6 @@
 const db = require("../db/connection")
 const {selectArticleById} = require('../models/articles.model')
+const {selectUserByUsername} = require('../models/users.model')
 
 
 async function selectCommentsByArticleId(articleId) {
@@ -14,6 +15,8 @@ async function selectCommentsByArticleId(articleId) {
 
 async function createComment(articleId, author, body) {
     await selectArticleById(articleId)
+
+    await selectUserByUsername(author)
 
     // Insert as articleId must be valid. 
     let insertStr = `INSERT INTO comments(article_id, author, body) VALUES( $1, $2, $3) RETURNING *;`
