@@ -21,7 +21,7 @@ describe("GET/api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad Request")
     })
 
-    test("404 - responds with a 400 Not Found if id is not in DB", async () => {
+    test("404 - responds with a 404 Not Found if id is not in DB", async () => {
         const {body}  = await request(app).get("/api/articles/7897688/comments").expect(404)
         expect(body.msg).toBe("Not Found")
     })
@@ -52,5 +52,48 @@ describe("GET/api/articles/:article_id/comments", () => {
                 }
             )
         })
+    })
+})
+
+
+describe("POST/api/articles/:article_id/comments", () => {
+    test("200 - responds with a new comment if article id exists in DB", async () => {
+        const requestBody = {
+            username: 'rogersop',
+            body: 'Blah, blah, blah....'
+        }
+
+        const {body}  = await request(app).post("/api/articles/5/comments").send(requestBody).expect(200)
+
+        expect(body.comment).toMatchObject(
+            {
+                comment_id: expect.any(Number),
+                votes: 0,
+                created_at: expect.any(String),
+                author: 'rogersop',
+                body: 'Blah, blah, blah....',
+                article_id: 5,
+            }
+        )
+    })
+
+    test("400 - responds with a 400 Bad Request if id is an invalid type", async () => {
+        const {body}  = await request(app).post("/api/articles/BadID/comments").expect(400)
+        expect(body.msg).toBe("Bad Request")
+    })
+
+    test("404 - responds with a 404 Not Found if id is not in DB", async () => {
+        const {body}  = await request(app).post("/api/articles/7897688/comments").expect(404)
+        expect(body.msg).toBe("Not Found")
+    })
+
+    test("404 - responds with a 404 Not Found if the username is not in DB", async () => {
+        const requestBody = {
+            username: 'NotAUsername',
+            body: 'Blah, blah, blah....'
+        }
+
+        const {body}  = await request(app).post("/api/articles/5/comments").send(requestBody).expect(404)
+        expect(body.msg).toBe("Not Found")
     })
 })

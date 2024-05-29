@@ -67,5 +67,20 @@
         "created_at": 1606176480000
       }
     ]
+  },
+
+
+  "POST /api/articles/:article_id/comments": {
+    "description": "serves a newly created comment for the article with given id",
+    "queries": [],
+    "exampleResponse": 
+      {
+        "comment_id": 21,
+        "body": "Example of a comment body. Probably badly spelt and  WITH SHOUTY CAPITALS LETTERS!",
+        "votes": 16,
+        "author": "icellusedkars",
+        "article_id": 5,
+        "created_at": 1591682400000
+      }
   }
 }
