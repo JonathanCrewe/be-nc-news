@@ -16,12 +16,12 @@ afterAll( () => {
 
 
 describe("GET/api/articles/:article_id", () => {
-    test("400 - responds with a 404 Bad Request if id is an invalid type", async () => {
+    test("400 - responds with a 400 Bad Request if id is an invalid type", async () => {
         const {body}  = await request(app).get("/api/articles/BadID").expect(400)
         expect(body.msg).toBe("Bad Request")
     })
 
-    test("404 - responds with a 400 Bad Request if id is not in DB", async () => {
+    test("404 - responds with a 404 Not Found if id is not in DB", async () => {
         const {body}  = await request(app).get("/api/articles/999576").expect(404)
         expect(body.msg).toBe("Not Found")
     })
@@ -49,7 +49,7 @@ describe("GET/api/articles/:article_id", () => {
 
 
 describe("GET/api/articles", () => {
-    test("200 - responds with a 200 status and an array of all 13 topics", async () => {
+    test("200 - responds with a 200 status and an array of all 13 articles", async () => {
         const result = await request(app).get("/api/articles").expect(200)
         const articlesArray = result.body.articles
 
