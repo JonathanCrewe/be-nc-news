@@ -13,6 +13,7 @@ async function selectCommentsByArticleId(articleId) {
     return commentsResult.rows   
 }
 
+
 async function createComment(articleId, author, body) {
     await selectArticleById(articleId)
 
@@ -26,4 +27,18 @@ async function createComment(articleId, author, body) {
 }
 
 
-module.exports = {selectCommentsByArticleId, createComment}
+async function deleteCommentById(id) {
+    if (!Number.isInteger(id)) {
+        return Promise.reject({ status: 400, msg: "Bad Request" })
+    }
+
+    let deleteStr = 'DELETE FROM comments WHERE comment_id = $1;'
+    const deleteResult = await db.query(deleteStr, [id])
+
+    if (deleteResult.rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+    }
+
+}
+
+module.exports = {selectCommentsByArticleId, createComment, deleteCommentById}

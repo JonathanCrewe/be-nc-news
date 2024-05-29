@@ -97,3 +97,22 @@ describe("POST/api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Not Found")
     })
 })
+
+describe("DELETE/api/comments/:comment_id", () => {
+    test("400 - responds with a Bad Request if comment_id is not an Integer", async () => {
+        const {body}  = await request(app).delete("/api/comments/BadIDType").expect(400)
+        expect(body.msg).toBe("Bad Request")
+    })
+
+    test("404 - responds with a 404 Not Found if comment_id is not in DB", async () => {
+        const {body}  = await request(app).delete("/api/comments/7897688").expect(404)
+        expect(body.msg).toBe("Not Found")
+    })
+
+    test("204 - responds with a 200 for valid input", async () => {
+        await request(app).delete("/api/comments/1").expect(204)
+
+        const selectResult = await db.query(`SELECT 1 FROM comments WHERE comment_id = $1;`, [1])
+        expect(selectResult.rows).toEqual([])
+    })
+})
