@@ -1,6 +1,5 @@
 const db = require("../db/connection")
 
-
 async function selectArticleById(id) {
     // Check the id is a valid type. 
     if (!Number.isInteger(id)) {
@@ -43,5 +42,19 @@ async function fetchAllArticles() {
     return allTopicsResult.rows
 }
 
+ async function updateArticle(id, incrementAmount) {
+    // Check the params are integers. 
+    if (!Number.isInteger(id) || !Number.isInteger(incrementAmount)) {
+        return Promise.reject({ status: 400, msg: "Bad Request" })
+    }
 
-module.exports = {selectArticleById, fetchAllArticles}
+    //Update the article. 
+    let updateStr = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;`
+
+    const result = await db.query(updateStr, [incrementAmount, id])
+
+    return result.rows[0]
+ }
+
+
+module.exports = {selectArticleById, fetchAllArticles, updateArticle}
