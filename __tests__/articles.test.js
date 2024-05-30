@@ -125,6 +125,7 @@ describe("GET/api/articles", () => {
 })
 
 
+
 describe("PATCH/api/articles/:article_id", () => {
     test("400 - responds with a 400 Bad Request if id is an invalid type", async () => {
         const requestBody = {inc_votes: 10}
@@ -203,5 +204,32 @@ describe("PATCH/api/articles/:article_id", () => {
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
             }
         )
+    })
+})
+
+
+
+describe("GET/api/articles?topic=", () => {
+    test("200 - responds with a 200 status and an array articles for the given topic (multiple results)", async () => {
+        const result = await request(app).get("/api/articles?topic=mitch").expect(200)
+        const articlesArray = result.body.articles
+
+        expect (articlesArray.length).toEqual(12)
+
+        articlesArray.forEach( (article) => {
+            expect(article).toMatchObject( {topic: 'mitch'} )
+        })
+    })
+
+    test("200 - responds with a 200 status and an empty array if a valid topic has no articles", async () => {
+        const result = await request(app).get("/api/articles?topic=paper").expect(200)
+        const articlesArray = result.body.articles
+
+        expect (articlesArray.length).toEqual(0)
+    })
+
+    test("404 - responds with a Not Found if topic doesn't exist", async () => {
+        const result = await request(app).get("/api/articles?topic=FreddieStarAteMyHamster").expect(404)
+        expect(result.body.msg).toBe("Not Found")
     })
 })

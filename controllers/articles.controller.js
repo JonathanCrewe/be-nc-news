@@ -13,7 +13,8 @@ async function getArticleById(req, res, next) {
 
 async function getArticles(req, res, next) {
     try {
-        const articleArray = await fetchAllArticles()
+        const {topic} = req.query
+        const articleArray = await fetchAllArticles(topic)
         res.status(200).send({articles: articleArray})
     }
     catch(err) {
