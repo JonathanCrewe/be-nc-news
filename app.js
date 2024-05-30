@@ -3,6 +3,7 @@ const {getTopics} = require('./controllers/topics.controller.js')
 const {getEndpoints} = require('./controllers/endpoints.controller.js')
 const {getArticleById, getArticles, patchArticle} = require('./controllers/articles.controller.js')
 const {getCommentsByArticleId, postComment, deleteComment} = require('./controllers/comments.controller.js')
+const {getUsers} = require('./controllers/users.controller.js')
 
 
 // Set up. 
@@ -30,8 +31,12 @@ app.post('/api/articles/:article_id/comments', postComment)
 app.patch('/api/articles/:article_id', patchArticle)
 
 
-// Comments
+// Comments.
 app.delete('/api/comments/:comment_id', deleteComment)
+
+
+// Users. 
+app.get('/api/users', getUsers)
 
 
 // Error handlers. 

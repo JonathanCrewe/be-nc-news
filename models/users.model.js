@@ -1,5 +1,16 @@
 const db = require("../db/connection")
 
+
+async function fetchAllUsers() {
+    let queryStr = `SELECT *
+                    FROM users;`
+
+    const allUsersResult = await db.query(queryStr)
+    
+    return allUsersResult.rows
+}
+
+
 async function selectUserByUsername(userName) {
     // Select the user. 
     let queryStr = `SELECT us.*
@@ -17,4 +28,5 @@ async function selectUserByUsername(userName) {
 }
 
 
-module.exports = {selectUserByUsername}
+
+module.exports = {selectUserByUsername, fetchAllUsers}

@@ -108,5 +108,26 @@
     "description": "deletes the comment with the given id from the database",
     "queries": [],
     "exampleResponse": {}
+  },
+
+
+  "GET /api/users": {
+    "description": "serves an array of all users without sending a body",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+          {
+            "username": "butter_bridge",
+            "name": "jonny",
+            "avatar_url":
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+          },
+          {
+            "username": "icellusedkars",
+            "name": "sam",
+            "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+          }
+        ]
+      }
   }
 }
