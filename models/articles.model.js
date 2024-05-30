@@ -1,4 +1,5 @@
 const db = require("../db/connection")
+const {fetchAllTopics} = require('./topics.model')
 
 async function selectArticleById(id) {
     // Check the id is a valid type. 
@@ -22,7 +23,8 @@ async function selectArticleById(id) {
 }
 
 
-async function fetchAllArticles() {
+async function fetchAllArticles(topic) {
+    // Setup. 
     let queryStr = `SELECT  art.article_id, 
                             art.title, 
                             art.topic, 
@@ -32,12 +34,32 @@ async function fetchAllArticles() {
                             art.article_img_url, 
                             COUNT(com.comment_id) AS comment_count
                     FROM articles art 
-                    LEFT JOIN comments com ON art.article_id = com.article_id
-                    GROUP BY    art.article_id, art.title, art.topic, art.author, 
-                                art.created_at, art.votes, art.article_img_url
-                    ORDER BY art.created_at DESC;`
+                    LEFT JOIN comments com ON art.article_id = com.article_id `
 
-    const allTopicsResult = await db.query(queryStr)
+    const groupOrderStr =  `GROUP BY art.article_id, art.title, art.topic, art.author, 
+                                    art.created_at, art.votes, art.article_img_url
+                            ORDER BY art.created_at DESC;`
+
+    const queryParamArray = []
+
+    // Add WHERE claues for topic if required. 
+    if (topic) {
+        const validTopics = await fetchAllTopics()
+        const validTopicValues = validTopics.map( (topic) => topic.slug)
+
+        if (!validTopicValues.includes(topic)) {
+            return Promise.reject( {status: 404, msg: "Not Found"} )
+        } else {
+            queryParamArray.push(topic)
+            queryStr = queryStr + `WHERE topic = $1`
+        }
+    }
+
+    // Add GROUP BY and ORDER By clauses. 
+    queryStr = queryStr + groupOrderStr
+
+    // Finally run the query. 
+    const allTopicsResult = await db.query(queryStr, queryParamArray)
 
     return allTopicsResult.rows
 }
