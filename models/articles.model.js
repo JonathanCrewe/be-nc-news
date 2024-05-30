@@ -8,9 +8,12 @@ async function selectArticleById(id) {
     }
 
     // Select the article. 
-    let queryStr = `SELECT art.*
+    let queryStr = `SELECT art.*, COUNT(com.comment_id) AS comment_count
                     FROM articles art 
-                    WHERE art.article_id = $1`
+                    LEFT JOIN comments com ON art.article_id = com.article_id 
+                    WHERE art.article_id = $1 
+                    GROUP BY art.article_id, art.title, art.topic, art.author, art.body,
+                                    art.created_at, art.votes, art.article_img_url;`
 
     const articleResult = await db.query(queryStr, [id])
 
