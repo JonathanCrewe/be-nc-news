@@ -1,4 +1,6 @@
 const {selectArticleById, fetchAllArticles, updateArticle} = require('../models/articles.model')
+const {selectCommentsByArticleId, createComment} = require('../models/comments.model')
+
 
 async function getArticleById(req, res, next) {
     try {
@@ -11,6 +13,7 @@ async function getArticleById(req, res, next) {
     }
 }
 
+
 async function getArticles(req, res, next) {
     try {
         const {topic, sort_by, order} = req.query
@@ -21,6 +24,7 @@ async function getArticles(req, res, next) {
         next(err)
     }
 }
+
 
 async function patchArticle(req, res, next) {
     try {
@@ -35,5 +39,34 @@ async function patchArticle(req, res, next) {
     }
 }
 
+async function getCommentsByArticleId(req, res, next) {
+    try {
+        const articleId = parseInt(req.params.article_id)
+        
+        const commentsArray = await selectCommentsByArticleId(articleId)
+        res.status(200).send({comments: commentsArray})
+    }
+    catch(err) {
+        next(err)
+    }
+}
 
-module.exports = {getArticleById, getArticles, patchArticle}
+
+async function postComment(req, res, next) {
+    try {
+        const articleId = parseInt(req.params.article_id)
+
+        const newCommentObj = req.body
+        const author = newCommentObj.username
+        const commentBody = newCommentObj.body
+
+        const newComment = await createComment(articleId, author, commentBody)
+        res.status(200).send({comment: newComment})
+    }
+    catch(err) {
+        next(err)
+    }
+}
+
+
+module.exports = {getArticleById, getArticles, patchArticle, getCommentsByArticleId, postComment}
