@@ -1,8 +1,8 @@
 const express = require('express')
-const {getArticleById, getArticles, patchArticle} = require('./controllers/articles.controller.js')
+const apiRouter = require("./routes/api-router")
+
 const {getCommentsByArticleId, postComment, deleteComment} = require('./controllers/comments.controller.js')
 const {getUsers} = require('./controllers/users.controller.js')
-const apiRouter = require("./routes/api-router");
 
 // Set up. 
 const app = express()
@@ -17,14 +17,7 @@ app.use('/api', apiRouter)
 
 
 
-// Articles. 
-app.get('/api/articles', getArticles)
-app.get('/api/articles/:article_id', getArticleById)
-app.get('/api/articles/:article_id/comments', getCommentsByArticleId) 
 
-app.post('/api/articles/:article_id/comments', postComment) 
-
-app.patch('/api/articles/:article_id', patchArticle)
 
 
 // Comments.

@@ -72,7 +72,6 @@ async function fetchAllArticles(topic, orderByColumn, arrangement) {
     const isValidColumn = await isValidColumnOnTable(orderByColumn, 'articles')
 
     if (!isValidColumn) {
-        console.log('Reject promise')
         return Promise.reject({ status: 400, msg: "Bad Request" })
     }
 
