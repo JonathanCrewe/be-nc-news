@@ -1,24 +1,20 @@
 const express = require('express')
-const {getTopics} = require('./controllers/topics.controller.js')
-const {getEndpoints} = require('./controllers/endpoints.controller.js')
 const {getArticleById, getArticles, patchArticle} = require('./controllers/articles.controller.js')
 const {getCommentsByArticleId, postComment, deleteComment} = require('./controllers/comments.controller.js')
 const {getUsers} = require('./controllers/users.controller.js')
-
+const apiRouter = require("./routes/api-router");
 
 // Set up. 
 const app = express()
-app.use(express.json())
 
 
 // End points. 
 
 // Api. 
-app.get('/api/', getEndpoints)
+app.use('/api', apiRouter)
 
 
-// Topics. 
-app.get('/api/topics', getTopics)
+
 
 
 // Articles. 
