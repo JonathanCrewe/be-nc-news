@@ -115,6 +115,25 @@ describe("GET/api/articles", () => {
         expect(articlesArray).toBeSortedBy("created_at", { descending: true })
     })
 
+    test("200 - the articles are sorted by passes 'sort_by' and arranged by 'order' when passed non-default values", async () => {
+        const result = await request(app).get("/api/articles?sort_by=title&order=asc").expect(200)
+        const articlesArray = result.body.articles
+
+        expect(articlesArray).toBeSortedBy("title")
+    })
+
+    test('should return 400 if order value is not valid ', async () => {
+        const { body } = await request(app).get("/api/articles?sort_by=title&order=BadOrder").expect(400)
+    
+        expect(body.msg).toBe("Bad Request")
+      });
+
+      test('should return 400 if order sort_by value is not a column on the articlea table ', async () => {
+        const { body } = await request(app).get("/api/articles?sort_by=BadColumnName&order=DESC").expect(400)
+    
+        expect(body.msg).toBe("Bad Request")
+      });
+
     test("200 - the articles do not have a body property", async () => {
         const result = await request(app).get("/api/articles").expect(200)
         const articlesArray = result.body.articles

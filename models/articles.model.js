@@ -1,6 +1,15 @@
 const db = require("../db/connection")
 const {fetchAllTopics} = require('./topics.model')
 
+async function getValidColumnNames(tableName) {
+    // ToDo - move to utility file
+    // Potentially validate the table name against a system table?
+    const columnResult = await db.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1;`, [tableName])
+    const validColumnNames = columnResult.rows.map( (columnNameObj) => columnNameObj.column_name)
+
+    return Object.values(validColumnNames)
+}
+
 async function selectArticleById(id) {
     // Check the id is a valid type. 
     if (!Number.isInteger(id)) {
@@ -26,7 +35,7 @@ async function selectArticleById(id) {
 }
 
 
-async function fetchAllArticles(topic) {
+async function fetchAllArticles(topic, orderByColumn, arrangement) {
     // Setup. 
     let queryStr = `SELECT  art.article_id, 
                             art.title, 
@@ -39,10 +48,6 @@ async function fetchAllArticles(topic) {
                     FROM articles art 
                     LEFT JOIN comments com ON art.article_id = com.article_id `
 
-    const groupOrderStr =  `GROUP BY art.article_id, art.title, art.topic, art.author, 
-                                    art.created_at, art.votes, art.article_img_url
-                            ORDER BY art.created_at DESC;`
-
     const queryParamArray = []
 
     // Add WHERE claues for topic if required. 
@@ -54,11 +59,37 @@ async function fetchAllArticles(topic) {
             return Promise.reject( {status: 404, msg: "Not Found"} )
         } else {
             queryParamArray.push(topic)
-            queryStr = queryStr + `WHERE topic = $1`
+            queryStr = queryStr + `WHERE topic = $1 `
         }
     }
 
-    // Add GROUP BY and ORDER By clauses. 
+    // Add GROUP BY and ORDER By clauses.     
+    // Order by. 
+    if (!orderByColumn) {
+        orderByColumn = 'created_at'
+    }
+
+    const validColumnNames = await getValidColumnNames('articles')
+
+    if (!validColumnNames.includes(orderByColumn.toLowerCase())) {
+        return Promise.reject({ status: 400, msg: "Bad Request" })
+    }
+
+    orderByColumn = 'art.' + orderByColumn
+
+    // ASC or DESC. 
+    if (!arrangement) {
+        arrangement = 'DESC'
+    }
+
+    if (!["asc", "desc"].includes(arrangement.toLowerCase())) {
+        return Promise.reject({ status: 400, msg: "Bad Request" })
+    }
+
+    const groupOrderStr =  `GROUP BY art.article_id, art.title, art.topic, art.author, 
+                                art.created_at, art.votes, art.article_img_url
+                            ORDER BY ${orderByColumn} ${arrangement} `
+
     queryStr = queryStr + groupOrderStr
 
     // Finally run the query. 
@@ -66,6 +97,7 @@ async function fetchAllArticles(topic) {
 
     return allTopicsResult.rows
 }
+
 
  async function updateArticle(id, incrementAmount) {
     // Check the params are integers. 

@@ -13,11 +13,12 @@ async function getArticleById(req, res, next) {
 
 async function getArticles(req, res, next) {
     try {
-        const {topic} = req.query
-        const articleArray = await fetchAllArticles(topic)
+        const {topic, sort_by, order} = req.query
+        const articleArray = await fetchAllArticles(topic, sort_by, order)
         res.status(200).send({articles: articleArray})
     }
     catch(err) {
+        console.log(err)
         next(err)
     }
 }
