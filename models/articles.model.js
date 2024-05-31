@@ -1,14 +1,7 @@
 const db = require("../db/connection")
 const {fetchAllTopics} = require('./topics.model')
+const {isValidColumnOnTable} = require('./utilities.model')
 
-async function getValidColumnNames(tableName) {
-    // ToDo - move to utility file
-    // Potentially validate the table name against a system table?
-    const columnResult = await db.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1;`, [tableName])
-    const validColumnNames = columnResult.rows.map( (columnNameObj) => columnNameObj.column_name)
-
-    return Object.values(validColumnNames)
-}
 
 async function selectArticleById(id) {
     // Check the id is a valid type. 
@@ -69,9 +62,17 @@ async function fetchAllArticles(topic, orderByColumn, arrangement) {
         orderByColumn = 'created_at'
     }
 
-    const validColumnNames = await getValidColumnNames('articles')
+    // const validColumnNames = await getValidColumnNames('articles')
 
-    if (!validColumnNames.includes(orderByColumn.toLowerCase())) {
+    // if (!validColumnNames.includes(orderByColumn.toLowerCase())) {
+    //     return Promise.reject({ status: 400, msg: "Bad Request" })
+    // }
+
+
+    const isValidColumn = await isValidColumnOnTable(orderByColumn, 'articles')
+
+    if (!isValidColumn) {
+        console.log('Reject promise')
         return Promise.reject({ status: 400, msg: "Bad Request" })
     }
 

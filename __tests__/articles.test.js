@@ -128,7 +128,7 @@ describe("GET/api/articles", () => {
         expect(body.msg).toBe("Bad Request")
       });
 
-      test('should return 400 if order sort_by value is not a column on the articlea table ', async () => {
+      test('should return 400 if order sort_by value is not a column on the articles table ', async () => {
         const { body } = await request(app).get("/api/articles?sort_by=BadColumnName&order=DESC").expect(400)
     
         expect(body.msg).toBe("Bad Request")
